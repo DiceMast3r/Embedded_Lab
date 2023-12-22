@@ -1,5 +1,5 @@
 {
     "board": "arduino:avr:uno",
     "programmer": "avrispmkii",
-    "sketch": "Lab_1_1\\Lab_1_1.ino"
+    "sketch": "Lab_1_2\\Lab_1_2.ino"
 }
