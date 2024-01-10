@@ -1,24 +1,24 @@
 int thermistorPin = A0;
 int V_o;
 float logR2, R2, t_K, t_C, t_F;
-const float Beta = 3974;
+const float Beta = 3800;
 const float roomTemp = 298.15;
 const float R_o = 10000;
 const float R1 = 10000;
-#define ENA 9
-#define IN1 3
-#define IN2 2
+#define ENB 9
+#define IN3 3
+#define IN4 2
 #define LED 8
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  pinMode(ENA, OUTPUT);
-  pinMode(IN1, OUTPUT);
-  pinMode(IN2, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
   pinMode(LED, OUTPUT);
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
 }
 
 void loop() {
@@ -38,7 +38,7 @@ void loop() {
   Serial.print((speed / 255) * 100);
   Serial.println("%");
   if (speed >= 35) {
-    analogWrite(ENA, (int)speed);
+    analogWrite(ENB, (int)speed);
   }
   if (t_C >= 50) {
   digitalWrite(LED, HIGH);
