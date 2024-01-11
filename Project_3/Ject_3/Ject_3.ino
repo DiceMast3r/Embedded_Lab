@@ -1,5 +1,7 @@
 int ldr = A0;
 int input_val = 0;
+int val_1, val_2, val_3, input_avg;
+unsigned int LDR_open = 400;
 #define relay 9
 
 void setup() {
@@ -11,13 +13,15 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   input_val = analogRead(ldr);
-  Serial.print("LDR Val: ");
+  Serial.print("LDR value: ");
   Serial.println(input_val);
-  if (input_val <= 100) {
+  if (input_val <= LDR_open) {
     digitalWrite(relay, HIGH);
+    delay(2000);
   }
   else {
     digitalWrite(relay, LOW);
+    delay(2000);
   }
-  delay(500);
+  delay(250);
 }
