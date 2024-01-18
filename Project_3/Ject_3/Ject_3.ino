@@ -17,11 +17,13 @@ void loop() {
   Serial.println(input_val);
   if (input_val <= LDR_open) {
     digitalWrite(relay, HIGH);
-    delay(2000);
+    Serial.println("LIGHT ON!!");
+    delay(2500);
   }
   else {
     digitalWrite(relay, LOW);
-    delay(2000);
+    Serial.println("LIGHT OFF!!");
+    delay(2500);
   }
-  delay(250);
+  delay(350);
 }
