@@ -21,14 +21,32 @@ void loop() {
   Serial.print("Distance = ");
   Serial.print(distance);
   Serial.println(" cm");
-  if (distance <= 20) {
+  if (distance >= 20) {
     digitalWrite(buzzer, HIGH);
     delay(1000);
     digitalWrite(buzzer, LOW);
-  } else if (distance <= 15) {
+  } 
+  else if (distance >= 15) {
+    digitalWrite(buzzer, HIGH);
+    delay(500);
+    digitalWrite(buzzer, LOW);
+  }
+  else if (distance >= 10) {
+    digitalWrite(buzzer, HIGH);
+    delay(200);
+    digitalWrite(buzzer, LOW);
+  }
+  else if (distance > 5) {
     digitalWrite(buzzer, HIGH);
     delay(50);
     digitalWrite(buzzer, LOW);
   }
+  else if (distance <= 5) {
+    digitalWrite(buzzer, HIGH);
+  }
+  else {
+    digitalWrite(buzzer, LOW);
+  }
+
   delay(200);
 }
