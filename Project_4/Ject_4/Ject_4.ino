@@ -8,7 +8,7 @@
 
 // create an instance of the stepper class using the steps and pins
 
-Stepper stepper(STEPS, 8, 9, 10, 11);
+Stepper stepper(STEPS, 8, 10, 9, 11);
 
 
 int P_c_val = 0;
