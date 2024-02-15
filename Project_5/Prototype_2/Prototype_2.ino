@@ -15,14 +15,19 @@ const int voltagePin = A1;
 const int currentPin = A0;
 const int frequencyPin = 2;
 const int sw1 = 3;
-const int sw2 = 4;
-const int sw3 = 5;
 const int inputPin = 2;
 int mode = 0;
 
 volatile unsigned long pulseCount = 0;
 unsigned long previousMillis = 0;
-unsigned long interval = 500;
+unsigned long interval = 0.000160;
+unsigned long displayInterval = 500;  // Interval to update the display (in milliseconds)
+
+// Function declarations
+void countPulse();
+void updateDisplay();
+void showName();
+void resetMode();
 
 void setup() {
   lcd.begin(16, 2);
@@ -61,8 +66,6 @@ void setup() {
   pinMode(currentPin, INPUT);
   pinMode(frequencyPin, INPUT_PULLUP);
   pinMode(sw1, INPUT_PULLUP);
-  pinMode(sw2, INPUT_PULLUP);
-  pinMode(sw3, INPUT_PULLUP);
 
   attachInterrupt(digitalPinToInterrupt(frequencyPin), countPulse, FALLING);
 
@@ -70,10 +73,12 @@ void setup() {
 }
 
 void loop() {
+  updateDisplay();  // Update the display in every iteration
+
   if (digitalRead(sw1) == LOW) {
-    mode += 1;    // mode change
+    mode += 1;   // mode change
     delay(200);  // Debounce delay
-  } 
+  }
 
   switch (mode) {
     case 0:
@@ -86,7 +91,10 @@ void loop() {
       measureFrequency();
       break;
     case 3:
-      showName()
+      showName();
+      break;
+    case 4:
+      resetMode();
       break;
   }
 }
@@ -129,28 +137,24 @@ void measureCurrent() {
 
 void measureFrequency() {
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    float frequency = pulseCount / (interval / 1000.0);
+  if (currentMillis - previousMillis >= displayInterval) {
+    unsigned long currentTime = currentMillis - previousMillis;
+    float frequency = pulseCount / (currentTime / 1000.0);
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Frequency:");
     lcd.print((int)frequency);
     lcd.print("Hz");
-    lcd.setCursor(6, 1);
-    lcd.write(byte(5));
-    lcd.setCursor(8, 1);
-    lcd.write(byte(6));
-    lcd.setCursor(10, 1);
-    lcd.write(byte(7));
-    unsigned long totalTime = interval;
+
+    // Ensure the pulse counting mechanism can handle higher frequencies
+    unsigned long newInterval = max(currentTime, interval);
+    unsigned long totalTime = newInterval;
     unsigned long onTime = pulseCount;
     float dutyCycle = (float)onTime / totalTime * 100.0;
-    if (dutyCycle <= 100) {
-      lcd.setCursor(0, 1);
-      lcd.print("Duty Cycle: ");
-      lcd.print(dutyCycle, 2);
-      lcd.print("%");
-    }
+    lcd.setCursor(0, 1);
+    lcd.print("Duty Cycle: ");
+    lcd.print(dutyCycle, 2);
+    lcd.print("%");
     pulseCount = 0;
     previousMillis = currentMillis;
   }
@@ -158,4 +162,45 @@ void measureFrequency() {
 
 void countPulse() {
   pulseCount++;
+}
+
+void showName() {
+  lcd.clear();
+  lcd.setCursor(3, 0);
+  lcd.print("Thongchai");
+  lcd.setCursor(6, 1);
+  lcd.write(byte(0));
+  lcd.setCursor(8, 1);
+  lcd.write(byte(2));
+  lcd.setCursor(10, 1);
+  lcd.write(byte(7));
+  delay(200);
+}
+
+void resetMode() {
+  mode = 0;
+}
+
+void updateDisplay() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= displayInterval) {
+    lcd.clear();
+    switch (mode) {
+      case 0:
+        measureVoltage();
+        break;
+      case 1:
+        measureCurrent();
+        break;
+      case 2:
+        measureFrequency();
+        break;
+      case 3:
+        showName();
+        break;
+      case 4:
+        resetMode();
+        break;
+    }
+  }
 }

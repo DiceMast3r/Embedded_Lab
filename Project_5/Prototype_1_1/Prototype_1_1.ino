@@ -15,14 +15,14 @@ const int voltagePin = A1;
 const int currentPin = A0;
 const int frequencyPin = 2;
 const int sw1 = 3;
-const int sw2 = 4;
-const int sw3 = 5;
 const int inputPin = 2;
 int mode = 0;
 
 volatile unsigned long pulseCount = 0;
 unsigned long previousMillis = 0;
 unsigned long interval = 500;
+int ontime, offtime, duty;
+float freq, period;
 
 void setup() {
   lcd.begin(16, 2);
@@ -59,21 +59,17 @@ void setup() {
 
   pinMode(voltagePin, INPUT);
   pinMode(currentPin, INPUT);
-  pinMode(frequencyPin, INPUT_PULLUP);
+  pinMode(frequencyPin, INPUT);
   pinMode(sw1, INPUT_PULLUP);
-  pinMode(sw2, INPUT_PULLUP);
-  pinMode(sw3, INPUT_PULLUP);
-
-  attachInterrupt(digitalPinToInterrupt(frequencyPin), countPulse, FALLING);
 
   Serial.begin(9600);
 }
 
 void loop() {
   if (digitalRead(sw1) == LOW) {
-    mode += 1;    // mode change
+    mode += 1;   // mode change
     delay(200);  // Debounce delay
-  } 
+  }
 
   switch (mode) {
     case 0:
@@ -86,7 +82,10 @@ void loop() {
       measureFrequency();
       break;
     case 3:
-      showName()
+      showName();
+      break;
+    case 4:
+      resetMode();
       break;
   }
 }
@@ -111,12 +110,24 @@ void measureVoltage() {
 }
 
 void measureCurrent() {
-  float current_in = analogRead(currentPin);
-  float current = current_in / 1000.0;
+  int offset = 2525;
+  int sensitivity = 185;
+  // Read the raw ADC value
+  int currentRawValue = analogRead(currentPin);
+
+  // Map the raw ADC value to voltage (0V to 5V)
+  float voltage = currentRawValue * (5000 / 1023.0);
+
+  // Subtract the offset voltage (2.5V when 0A)
+  voltage -= offset;
+
+  // Convert voltage to current based on the sensitivity (1V per 5A)
+  float current = voltage / sensitivity;  // 1V per 5A
+
   lcd.clear();
   lcd.setCursor(1, 0);
   lcd.print("Current:");
-  lcd.print(current, 2);
+  lcd.print(current, 2);  // Display current with two decimal places
   lcd.print("A");
   lcd.setCursor(6, 1);
   lcd.write(byte(3));
@@ -127,35 +138,47 @@ void measureCurrent() {
   delay(100);
 }
 
+
 void measureFrequency() {
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    float frequency = pulseCount / (interval / 1000.0);
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Frequency:");
-    lcd.print((int)frequency);
-    lcd.print("Hz");
-    lcd.setCursor(6, 1);
-    lcd.write(byte(5));
-    lcd.setCursor(8, 1);
-    lcd.write(byte(6));
-    lcd.setCursor(10, 1);
-    lcd.write(byte(7));
-    unsigned long totalTime = interval;
-    unsigned long onTime = pulseCount;
-    float dutyCycle = (float)onTime / totalTime * 100.0;
-    if (dutyCycle <= 100) {
-      lcd.setCursor(0, 1);
-      lcd.print("Duty Cycle: ");
-      lcd.print(dutyCycle, 2);
-      lcd.print("%");
-    }
-    pulseCount = 0;
-    previousMillis = currentMillis;
+  unsigned long onTime = pulseIn(frequencyPin, HIGH);
+  unsigned long offTime = pulseIn(frequencyPin, LOW);
+  unsigned long period = onTime + offTime;
+
+  float frequency = 0.0;
+  float dutyCycle = 0.0;
+
+  if (period > 0) {
+    frequency = 1000000.0 / period;
+    dutyCycle = (onTime / (float)period) * 100.0;
   }
+
+  lcd.clear();
+  lcd.setCursor(2, 0);
+  lcd.print("Freq: ");
+  lcd.print((int)frequency);
+  lcd.print("Hz");
+  lcd.setCursor(2, 1);
+  lcd.print("Duty: ");
+  lcd.print(dutyCycle, 2);
+  lcd.print("%");
+  delay(200);
 }
 
-void countPulse() {
-  pulseCount++;
+
+
+void showName() {
+  lcd.clear();
+  lcd.setCursor(4, 0);
+  lcd.print("Thongchai");
+  lcd.setCursor(6, 1);
+  lcd.write(byte(0));
+  lcd.setCursor(8, 1);
+  lcd.write(byte(2));
+  lcd.setCursor(10, 1);
+  lcd.write(byte(7));
+  delay(200);
+}
+
+void resetMode() {
+  mode = 0;
 }
