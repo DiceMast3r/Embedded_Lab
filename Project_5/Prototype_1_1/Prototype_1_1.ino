@@ -110,19 +110,22 @@ void measureVoltage() {
 }
 
 void measureCurrent() {
-  int offset = 2525;
-  int sensitivity = 185;
+  // Calibration parameters
+  float offsetVoltage = 2.5;        // Offset voltage when no current is flowing
+  float sensitivity = 0.185;        // Sensitivity, in volts per ampere
+  float calibrationFactor = 0.925;  // Calibration factor to adjust the reading
+
   // Read the raw ADC value
   int currentRawValue = analogRead(currentPin);
 
   // Map the raw ADC value to voltage (0V to 5V)
-  float voltage = currentRawValue * (5000 / 1023.0);
+  float voltage = currentRawValue * (5.0 / 1023.0);
 
   // Subtract the offset voltage (2.5V when 0A)
-  voltage -= offset;
+  voltage -= offsetVoltage;
 
-  // Convert voltage to current based on the sensitivity (1V per 5A)
-  float current = voltage / sensitivity;  // 1V per 5A
+  // Convert voltage to current based on the sensitivity
+  float current = (voltage / sensitivity) * calibrationFactor;
 
   lcd.clear();
   lcd.setCursor(1, 0);
