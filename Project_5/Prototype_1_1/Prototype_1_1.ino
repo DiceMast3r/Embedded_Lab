@@ -97,7 +97,7 @@ void measureVoltage() {
 
   lcd.clear();
   lcd.setCursor(1, 0);
-  lcd.print("Voltage:");
+  lcd.print("VOLTAGE: ");
   lcd.print(voltageIn, 2);  // Display two decimal places
   lcd.print("V");
   lcd.setCursor(6, 1);
@@ -129,7 +129,7 @@ void measureCurrent() {
 
   lcd.clear();
   lcd.setCursor(1, 0);
-  lcd.print("Current:");
+  lcd.print("CURRENT: ");
   lcd.print(current, 2);  // Display current with two decimal places
   lcd.print("A");
   lcd.setCursor(6, 1);
@@ -157,11 +157,11 @@ void measureFrequency() {
 
   lcd.clear();
   lcd.setCursor(2, 0);
-  lcd.print("Freq: ");
+  lcd.print("FREQ: ");
   lcd.print((int)frequency);
   lcd.print("Hz");
   lcd.setCursor(2, 1);
-  lcd.print("Duty: ");
+  lcd.print("DUTY: ");
   lcd.print(dutyCycle, 2);
   lcd.print("%");
   delay(200);
@@ -172,12 +172,16 @@ void measureFrequency() {
 void showName() {
   lcd.clear();
   lcd.setCursor(4, 0);
-  lcd.print("Thongchai");
-  lcd.setCursor(6, 1);
+  lcd.print("65010386");
+  lcd.setCursor(4, 1);
+  lcd.print("THONGCHAI");
+  lcd.setCursor(2, 0);
   lcd.write(byte(0));
-  lcd.setCursor(8, 1);
+  lcd.setCursor(2, 1);
+  lcd.write(byte(1));
+  lcd.setCursor(14, 0);
   lcd.write(byte(2));
-  lcd.setCursor(10, 1);
+  lcd.setCursor(14, 1);
   lcd.write(byte(7));
   delay(200);
 }
