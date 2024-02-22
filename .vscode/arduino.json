@@ -1,5 +1,0 @@
-{
-    "board": "arduino:avr:uno",
-    "programmer": "avrispmkii",
-    "sketch": "Project_2\\Ject_2\\Ject_2.ino"
-}
