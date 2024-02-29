@@ -18,19 +18,19 @@ void loop() {
   int val_ldr_L = analogRead(ldr_L);
   int val_ldr_R = analogRead(ldr_R);
 
-  Serial.print("LDR 1: ");
+  Serial.print("LDR L: ");
   Serial.print(val_ldr_L);
   Serial.print(", ");
-  Serial.print("LDR 2: ");
+  Serial.print("LDR R: ");
   Serial.print(val_ldr_R);
   Serial.print(", ");
 
   if ((val_ldr_L > th_value) && (val_ldr_R < val_ldr_L)) {
     myservo.write(0);
-    Serial.println("Left");
+    Serial.println("Left 90");
   } else if ((val_ldr_R > th_value) && (val_ldr_L < val_ldr_R)) {
     myservo.write(180);
-    Serial.println("Right");
+    Serial.println("Right 90");
   } else {
     myservo.write(90);
     Serial.println("Middle");
