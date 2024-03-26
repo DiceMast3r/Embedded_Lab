@@ -3,31 +3,28 @@
 Servo myservo;
 
 const int ldr_pin = A0;
-constexpr int th_value = 500;
 
 void setup() {
   myservo.attach(9);
   Serial.begin(9600);
   pinMode(ldr_pin, INPUT);
-  myservo.write(90);
 }
 
 void loop() {
   int val_ldr = analogRead(ldr_pin);
-
+  int servo_angle = map(val_ldr, 600, 1000, 0, 180);
+  
   Serial.print("LDR: ");
   Serial.println(val_ldr);
+  Serial.print("Servo angle: ");
+  Serial.println(servo_angle);
 
-  if (val_ldr >= th_value) {
+  if (servo_angle >= 0) {
+    myservo.write(servo_angle);
+    delay(45);
+  } else if  (servo_angle < 0) {
     myservo.write(0);
-    Serial.println("Left 90");
-  } else if (val_ldr <= (th_value - 300)) {
-    myservo.write(180);
-    Serial.println("Right 90");
-  } else {
-    myservo.write(90);
-    Serial.println("Middle");
+    delay(45);
   }
 
-  delay(300); 
 }
